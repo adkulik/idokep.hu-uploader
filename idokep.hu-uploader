@@ -1,133 +1,64 @@
-blueprint:
-  name: Időkép Automata Feltöltő (Univerzális)
-  description: "Beküldi az okosotthon meteorológiai adatait az Időképnek. A működéshez a `shell_command.idokep_get` parancs szükséges a configuration.yaml fájlban."
-  domain: automation
-  input:
-    idokep_user:
-      name: Felhasználónév
-      description: Az Időkép állomásod azonosítója.
-      selector:
-        text:
-    idokep_pass:
-      name: Jelszó
-      description: Az állomáshoz tartozó jelszó.
-      selector:
-        text:
-          type: password
-    temp_sensor:
-      name: Hőmérséklet szenzor (Kötelező)
-      selector:
-        entity:
-          domain: sensor
-          device_class: temperature
-    humidity_sensor:
-      name: Páratartalom szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-          device_class: humidity
-    pressure_sensor:
-      name: Légnyomás szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-          device_class: atmospheric_pressure
-    wind_dir_sensor:
-      name: Szélirány szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    wind_speed_sensor:
-      name: Szélsebesség szenzor - km/h (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    wind_gust_sensor:
-      name: Széllökés szenzor - km/h (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_10m:
-      name: Csapadék - 10 perces (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_1h:
-      name: Csapadék - 1 órás (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_24h:
-      name: Csapadék - Napi összesített (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
+# ⛅ Időkép Automata Feltöltő (Home Assistant Blueprint)
 
-variables:
-  user_name: !input idokep_user
-  password: !input idokep_pass
-  temp_sensor: !input temp_sensor
-  hum_sensor: !input humidity_sensor
-  press_sensor: !input pressure_sensor
-  wdir_sensor: !input wind_dir_sensor
-  wspeed_sensor: !input wind_speed_sensor
-  wgust_sensor: !input wind_gust_sensor
-  r_10m: !input rain_10m
-  r_1h: !input rain_1h
-  r_24h: !input rain_24h
+Ezzel a Home Assistant sablonnal (Blueprint) pofonegyszerűen, egy grafikus felületen keresztül bekötheted az okosotthonod meteorológiai szenzorait a magyar Időkép rendszerébe. 
 
-trigger:
-  - platform: time_pattern
-    minutes: "/5"
+Nincs többé bonyolult YAML kódolás, a sablon a háttérben automatikusan elvégzi a legnehezebb feladatokat:
+* Az adatok Időkép-kompatibilis formázását (tizedesvesszők, pontos kerekítések).
+* A szélsebesség és széllökés automatikus átváltását.
+* A nem elérhető (unavailable/unknown) vagy épp frissítő szenzorok intelligens elrejtését, így a feltöltés sosem akad meg hamis nullákkal.
 
-action:
-  - service: shell_command.idokep_get
-    data:
-      url: >-
-        {% set alap = 'http://pro.idokep.hu/sendws.php?user=' ~ user_name ~ '&pass=' ~ password ~ '&ev=' ~ now().year ~ '&ho=' ~ now().month ~ '&nap=' ~ now().day ~ '&ora=' ~ now().hour ~ '&perc=' ~ now().minute ~ '&mp=' ~ now().second %}
-        
-        {% if temp_sensor != '' and is_number(states(temp_sensor)) %}
-          {% set alap = alap ~ '&hom=' ~ ('%.2f' | format(states(temp_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if hum_sensor != '' and is_number(states(hum_sensor)) %}
-          {% set alap = alap ~ '&rh=' ~ ('%.2f' | format(states(hum_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if press_sensor != '' and is_number(states(press_sensor)) %}
-          {% set alap = alap ~ '&p=' ~ ('%.2f' | format(states(press_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wdir_sensor != '' and is_number(states(wdir_sensor)) %}
-          {% set alap = alap ~ '&szelirany=' ~ ('%.2f' | format(states(wdir_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wspeed_sensor != '' and is_number(states(wspeed_sensor)) %}
-          {% set alap = alap ~ '&szelero=' ~ ('%.2f' | format(states(wspeed_sensor) | float(0) / 3.6) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wgust_sensor != '' and is_number(states(wgust_sensor)) %}
-          {% set alap = alap ~ '&szellokes=' ~ ('%.2f' | format(states(wgust_sensor) | float(0) / 3.6) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_10m != '' and is_number(states(r_10m)) %}
-          {% set alap = alap ~ '&csap=' ~ ('%.2f' | format(states(r_10m) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_1h != '' and is_number(states(r_1h)) %}
-          {% set alap = alap ~ '&csap1h=' ~ ('%.2f' | format(states(r_1h) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_24h != '' and is_number(states(r_24h)) %}
-          {% set alap = alap ~ '&csaptotal=' ~ ('%.2f' | format(states(r_24h) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {{ alap ~ '&tipus=egyeb&inhom=22,0' }}
+---
+
+## ❗ Fontos figyelmeztetés: Csak hiteles adatokat tölts fel!
+
+Az Időkép térképeit és előrejelzéseit emberek százezrei használják nap mint nap. Kérjük, **csak és kizárólag akkor indíts adatfeltöltést, ha a szenzoraid elhelyezése megfelel a meteorológiai szabványoknak!** A rossz helyre tett műszerek (pl. napon lévő hőmérő, fal melletti szélmérő) hibás adatokat generálnak, amivel rontod a hálózat megbízhatóságát.
+
+### 📐 Műszerelhelyezési útmutató
+* **Hőmérő és páratartalom mérő:** 2 méter magasságban, árnyékos helyen (lehetőleg szabványos hőmérőházban vagy tányéros árnyékolóban) kell elhelyezni. Szigorúan tilos falhoz, betonhoz vagy olyan felülethez rögzíteni, ami hőt sugározhat magából!
+* **Szélmérő:** Szabad, nyílt területen, a talajszinttől számítva ideálisan 10 méter magasan kell lennie. Ha erre nincs mód, akkor a környező akadályok (háztető, fák) fölé kell nyúlnia legalább 2-3 méterrel, hogy a légáramlás akadálytalanul érje.
+* **Csapadékmérő:** Nyílt, vízszintes területen, a talajtól nagyjából 1-1,5 méter magasságban telepítve. Ügyelj rá, hogy épület, fa vagy tető ne takarja ki, és a szél ne tudjon belefújni faleveleket.
+* **Légnyomásmérő:** Beltéren is elhelyezhető, de figyelj arra, hogy a Home Assistant mindig **tengerszintre átszámított (relatív) légnyomásértéket** küldjön, ne pedig a szenzor által mért abszolút értéket.
+
+---
+
+## ⚠️ 1. Lépés: Előfeltételek (Kötelező!)
+
+A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. Ha még nincs ilyened, **[kattints ide és regisztrálj egyet!](https://www.idokep.hu/regisztracio?szint=halado)**
+
+Mivel a Blueprintek önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
+
+1. Nyisd meg a Home Assistant `configuration.yaml` fájlját.
+2. Keresd meg a `shell_command:` blokkot (ha még nincs, hozd létre a fájl végén).
+3. Illeszd be az alábbi sort pontosan így, az idézőjelekre figyelve:
+
+```yaml
+shell_command:
+  idokep_get: 'curl -s -A "IdokepAutomata/500 (Windows)" -X GET "{{ url }}"'
+```
+
+> **Miért van erre szükség?** Ez a biztonságos hivatkozás elhiteti az Időkép szervereivel, hogy egy hivatalos meteorológiai szoftverből érkezik az adat, így elkerülheted a kérések blokkolását.
+
+4. Mentsd el a fájlt, majd **indítsd újra a Home Assistantot**, vagy a *Fejlesztői eszközök* menüpontban végezz egy YAML újratöltést!
+
+---
+
+## 🚀 2. Lépés: Telepítés
+
+A Blueprint importálásához kattints az alábbi gombra, ami varázsütésre megnyitja a saját Home Assistant rendszeredet az importáló ablakkal:
+
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader)
+
+*(Ha a gomb valamiért nem működne, másold ki ezt a linket: `https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader` és a Home Assistant **Tervezetek** menüpontjában, a jobb alsó sarokban lévő **Importálás** gombnál illeszd be!)*
+
+---
+
+## ⚙️ 3. Lépés: Beállítás a felületen
+
+1. Menj a **Beállítások -> Automatizációk és jelenetek -> Tervezetek (Blueprints)** menüpontba.
+2. Keresd meg a listában az *Időkép Automata Feltöltő (Univerzális)* sablont, és kattints az **Automatizálás létrehozása** gombra.
+3. Töltsd ki a megjelenő egyszerű grafikus felületet:
+   * **Felhasználónév és Jelszó:** Add meg az Időkép állomásod hivatalos azonosítóit.
+   * **Szenzorok:** Válaszd ki a legördülő menükből az okosotthonod megfelelő entitásait. Csak a Hőmérséklet megadása kötelező, az összes többi meteorológiai adat opcionális!
+4. Mentsd el az automatizációt.
+
+Kész is vagy! Az automatizáció innentől kezdve a háttérben, észrevétlenül, **5 percenként** frissíti az adataidat az Időkép hálózatában.
