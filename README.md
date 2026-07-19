@@ -46,9 +46,9 @@ shell_command:
 
 A Blueprint importálásához kattints az alábbi gombra, ami varázsütésre megnyitja a saját Home Assistant rendszeredet az importáló ablakkal:
 
-[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/blueprint)
+[![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader)
 
-*(Ha a gomb valamiért nem működne, másold ki ezt a linket: `https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/blueprint` és a Home Assistant **Tervezetek** menüpontjában, a jobb alsó sarokban lévő **Importálás** gombnál illeszd be!)*
+*(Ha a gomb valamiért nem működne, másold ki ezt a linket: `https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader` és a Home Assistant **Tervezetek** menüpontjában, a jobb alsó sarokban lévő **Importálás** gombnál illeszd be!)*
 
 ---
 
