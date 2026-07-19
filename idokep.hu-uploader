@@ -1,0 +1,133 @@
+blueprint:
+  name: Időkép Automata Feltöltő (Univerzális)
+  description: "Beküldi az okosotthon meteorológiai adatait az Időképnek. A működéshez a `shell_command.idokep_get` parancs szükséges a configuration.yaml fájlban."
+  domain: automation
+  input:
+    idokep_user:
+      name: Felhasználónév
+      description: Az Időkép állomásod azonosítója.
+      selector:
+        text:
+    idokep_pass:
+      name: Jelszó
+      description: Az állomáshoz tartozó jelszó.
+      selector:
+        text:
+          type: password
+    temp_sensor:
+      name: Hőmérséklet szenzor (Kötelező)
+      selector:
+        entity:
+          domain: sensor
+          device_class: temperature
+    humidity_sensor:
+      name: Páratartalom szenzor (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+          device_class: humidity
+    pressure_sensor:
+      name: Légnyomás szenzor (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+          device_class: atmospheric_pressure
+    wind_dir_sensor:
+      name: Szélirány szenzor (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+    wind_speed_sensor:
+      name: Szélsebesség szenzor - km/h (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+    wind_gust_sensor:
+      name: Széllökés szenzor - km/h (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+    rain_10m:
+      name: Csapadék - 10 perces (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+    rain_1h:
+      name: Csapadék - 1 órás (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+    rain_24h:
+      name: Csapadék - Napi összesített (Opcionális)
+      default: ""
+      selector:
+        entity:
+          domain: sensor
+
+variables:
+  user_name: !input idokep_user
+  password: !input idokep_pass
+  temp_sensor: !input temp_sensor
+  hum_sensor: !input humidity_sensor
+  press_sensor: !input pressure_sensor
+  wdir_sensor: !input wind_dir_sensor
+  wspeed_sensor: !input wind_speed_sensor
+  wgust_sensor: !input wind_gust_sensor
+  r_10m: !input rain_10m
+  r_1h: !input rain_1h
+  r_24h: !input rain_24h
+
+trigger:
+  - platform: time_pattern
+    minutes: "/5"
+
+action:
+  - service: shell_command.idokep_get
+    data:
+      url: >-
+        {% set alap = 'http://pro.idokep.hu/sendws.php?user=' ~ user_name ~ '&pass=' ~ password ~ '&ev=' ~ now().year ~ '&ho=' ~ now().month ~ '&nap=' ~ now().day ~ '&ora=' ~ now().hour ~ '&perc=' ~ now().minute ~ '&mp=' ~ now().second %}
+        
+        {% if temp_sensor != '' and is_number(states(temp_sensor)) %}
+          {% set alap = alap ~ '&hom=' ~ ('%.2f' | format(states(temp_sensor) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if hum_sensor != '' and is_number(states(hum_sensor)) %}
+          {% set alap = alap ~ '&rh=' ~ ('%.2f' | format(states(hum_sensor) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if press_sensor != '' and is_number(states(press_sensor)) %}
+          {% set alap = alap ~ '&p=' ~ ('%.2f' | format(states(press_sensor) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if wdir_sensor != '' and is_number(states(wdir_sensor)) %}
+          {% set alap = alap ~ '&szelirany=' ~ ('%.2f' | format(states(wdir_sensor) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if wspeed_sensor != '' and is_number(states(wspeed_sensor)) %}
+          {% set alap = alap ~ '&szelero=' ~ ('%.2f' | format(states(wspeed_sensor) | float(0) / 3.6) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if wgust_sensor != '' and is_number(states(wgust_sensor)) %}
+          {% set alap = alap ~ '&szellokes=' ~ ('%.2f' | format(states(wgust_sensor) | float(0) / 3.6) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if r_10m != '' and is_number(states(r_10m)) %}
+          {% set alap = alap ~ '&csap=' ~ ('%.2f' | format(states(r_10m) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if r_1h != '' and is_number(states(r_1h)) %}
+          {% set alap = alap ~ '&csap1h=' ~ ('%.2f' | format(states(r_1h) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {% if r_24h != '' and is_number(states(r_24h)) %}
+          {% set alap = alap ~ '&csaptotal=' ~ ('%.2f' | format(states(r_24h) | float(0)) | replace('.', ',')) %}
+        {% endif %}
+        
+        {{ alap ~ '&tipus=egyeb&inhom=22,0' }}
