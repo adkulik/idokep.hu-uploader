@@ -1,75 +1,176 @@
 blueprint:
   name: Időkép Automata Feltöltő (Univerzális)
-  description: "Beküldi az okosotthon meteorológiai adatait az Időképnek. A működéshez a `shell_command.idokep_get` parancs szükséges a configuration.yaml fájlban."
+  description: >-
+    Beküldi az okosotthon meteorológiai adatait az Időkép állomásodhoz.
+
+
+    **Előfeltétel:** a `shell_command.idokep_get` parancsnak léteznie kell a
+    `configuration.yaml` fájlban. A helyes forma:
+
+
+    ```yaml
+
+    shell_command:
+      idokep_get: 'curl -s -o /dev/null "{{ url }}"'
+    ```
+
+
+    Fontos: a Home Assistant a `shell_command`-ot **nem shellben** futtatja,
+    ezért a `> /dev/null 2>&1` típusú átirányítás nem működik — a curl külön
+    argumentumként kapná meg, és `URL_MALFORMAT` (3-as) hibakóddal állna le.
+    Használd helyette a curl saját `-o /dev/null` kapcsolóját, ahogy fent.
+
+
+    **Biztonsági megjegyzés:** ha a parancs hibára fut, a Home Assistant a
+    teljes parancssort — benne az állomás jelszavával — kiírja a rendszernaplóba,
+    ami bekerül a diagnosztikai csomagokba és a biztonsági mentésekbe is.
+    Használj az Időkép-állomásodhoz külön, máshol nem használt jelszót.
+
+
+    **Mértékegységek:** a szélsebességet és a széllökést a szenzor saját
+    mértékegysége alapján váltja át m/s-ra (km/h, m/s, mph és csomó
+    támogatott). A szélirány fokban vagy égtáj-rövidítésként is megadható.
   domain: automation
+  source_url: https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   input:
-    idokep_user:
-      name: Felhasználónév
-      description: Az Időkép állomásod azonosítója.
-      selector:
-        text:
-    idokep_pass:
-      name: Jelszó
-      description: Az állomáshoz tartozó jelszó.
-      selector:
-        text:
-          type: password
-    temp_sensor:
-      name: Hőmérséklet szenzor (Kötelező)
-      selector:
-        entity:
-          domain: sensor
-          device_class: temperature
-    humidity_sensor:
-      name: Páratartalom szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-          device_class: humidity
-    pressure_sensor:
-      name: Légnyomás szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-          device_class: atmospheric_pressure
-    wind_dir_sensor:
-      name: Szélirány szenzor (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    wind_speed_sensor:
-      name: Szélsebesség szenzor - km/h (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    wind_gust_sensor:
-      name: Széllökés szenzor - km/h (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_10m:
-      name: Csapadék - 10 perces (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_1h:
-      name: Csapadék - 1 órás (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
-    rain_24h:
-      name: Csapadék - Napi összesített (Opcionális)
-      default: ""
-      selector:
-        entity:
-          domain: sensor
+    fiok:
+      name: Időkép fiók
+      icon: mdi:account-key
+      input:
+        idokep_user:
+          name: Felhasználónév
+          description: Az Időkép állomásod azonosítója.
+          selector:
+            text:
+        idokep_pass:
+          name: Jelszó
+          description: Az állomáshoz tartozó jelszó.
+          selector:
+            text:
+              type: password
+
+    utemezes:
+      name: Ütemezés
+      icon: mdi:timer-outline
+      collapsed: true
+      input:
+        feltoltes_gyakorisag:
+          name: Feltöltés gyakorisága
+          description: >-
+            Milyen sűrűn küldjön adatot. Az Időkép percenkénti beküldést is
+            elfogad, de 5 perc a legtöbb állomásnak bőven elég.
+          default: "/5"
+          selector:
+            select:
+              mode: dropdown
+              options:
+                - label: Percenként
+                  value: "/1"
+                - label: 2 percenként
+                  value: "/2"
+                - label: 5 percenként
+                  value: "/5"
+                - label: 10 percenként
+                  value: "/10"
+                - label: 15 percenként
+                  value: "/15"
+
+    merok:
+      name: Mérőszenzorok
+      icon: mdi:thermometer
+      input:
+        temp_sensor:
+          name: Hőmérséklet (Kötelező)
+          description: Kültéri hőmérséklet.
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+        humidity_sensor:
+          name: Páratartalom (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: humidity
+        pressure_sensor:
+          name: Légnyomás (Opcionális)
+          description: >-
+            Lehetőleg a **tengerszintre korrigált** értéket add meg, ne a nyers
+            állomásnyomást — az Időkép ezt várja.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: atmospheric_pressure
+        indoor_temp_sensor:
+          name: Beltéri hőmérséklet (Opcionális)
+          description: >-
+            Ha megadod, a beltéri hőmérséklet is felkerül. Ha üresen hagyod,
+            a paraméter egyszerűen kimarad a beküldésből.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+              device_class: temperature
+
+    szel:
+      name: Szél
+      icon: mdi:weather-windy
+      collapsed: true
+      input:
+        wind_dir_sensor:
+          name: Szélirány (Opcionális)
+          description: >-
+            Fokban (0–360) **vagy** égtáj-rövidítésként megadott érték.
+            Támogatott rövidítések: N, NNE, NE, ENE, E, ESE, SE, SSE, S, SSW,
+            SW, WSW, W, WNW, NW, NNW, valamint a magyar É, ÉK, K, DK, D, DNY,
+            NY, ÉNY. A kis- és nagybetű nem számít.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        wind_speed_sensor:
+          name: Szélsebesség (Opcionális)
+          description: >-
+            A mértékegységet a szenzorból olvassa ki és m/s-ra váltja.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        wind_gust_sensor:
+          name: Széllökés (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+
+    csapadek:
+      name: Csapadék
+      icon: mdi:weather-pouring
+      collapsed: true
+      input:
+        rain_10m:
+          name: 10 perces csapadék (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        rain_1h:
+          name: 1 órás csapadék (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        rain_24h:
+          name: Napi összesített csapadék (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+
+mode: single
+max_exceeded: silent
 
 variables:
   user_name: !input idokep_user
@@ -77,6 +178,7 @@ variables:
   temp_sensor: !input temp_sensor
   hum_sensor: !input humidity_sensor
   press_sensor: !input pressure_sensor
+  indoor_sensor: !input indoor_temp_sensor
   wdir_sensor: !input wind_dir_sensor
   wspeed_sensor: !input wind_speed_sensor
   wgust_sensor: !input wind_gust_sensor
@@ -84,50 +186,80 @@ variables:
   r_1h: !input rain_1h
   r_24h: !input rain_24h
 
-trigger:
-  - platform: time_pattern
-    minutes: "/5"
+triggers:
+  - trigger: time_pattern
+    minutes: !input feltoltes_gyakorisag
 
-action:
-  - service: shell_command.idokep_get
+conditions:
+  - condition: template
+    value_template: "{{ temp_sensor != '' and is_number(states(temp_sensor)) }}"
+
+actions:
+  - action: shell_command.idokep_get
     data:
       url: >-
-        {% set alap = 'http://pro.idokep.hu/sendws.php?user=' ~ user_name ~ '&pass=' ~ password ~ '&ev=' ~ now().year ~ '&ho=' ~ now().month ~ '&nap=' ~ now().day ~ '&ora=' ~ now().hour ~ '&perc=' ~ now().minute ~ '&mp=' ~ now().second %}
-        
-        {% if temp_sensor != '' and is_number(states(temp_sensor)) %}
-          {% set alap = alap ~ '&hom=' ~ ('%.2f' | format(states(temp_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if hum_sensor != '' and is_number(states(hum_sensor)) %}
-          {% set alap = alap ~ '&rh=' ~ ('%.2f' | format(states(hum_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if press_sensor != '' and is_number(states(press_sensor)) %}
-          {% set alap = alap ~ '&p=' ~ ('%.2f' | format(states(press_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wdir_sensor != '' and is_number(states(wdir_sensor)) %}
-          {% set alap = alap ~ '&szelirany=' ~ ('%.2f' | format(states(wdir_sensor) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wspeed_sensor != '' and is_number(states(wspeed_sensor)) %}
-          {% set alap = alap ~ '&szelero=' ~ ('%.2f' | format(states(wspeed_sensor) | float(0) / 3.6) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if wgust_sensor != '' and is_number(states(wgust_sensor)) %}
-          {% set alap = alap ~ '&szellokes=' ~ ('%.2f' | format(states(wgust_sensor) | float(0) / 3.6) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_10m != '' and is_number(states(r_10m)) %}
-          {% set alap = alap ~ '&csap=' ~ ('%.2f' | format(states(r_10m) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_1h != '' and is_number(states(r_1h)) %}
-          {% set alap = alap ~ '&csap1h=' ~ ('%.2f' | format(states(r_1h) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {% if r_24h != '' and is_number(states(r_24h)) %}
-          {% set alap = alap ~ '&csaptotal=' ~ ('%.2f' | format(states(r_24h) | float(0)) | replace('.', ',')) %}
-        {% endif %}
-        
-        {{ alap ~ '&tipus=egyeb&inhom=22,0' }}
+        {%- set egtajak = {
+          'n': 0.0, 'nne': 22.5, 'ne': 45.0, 'ene': 67.5,
+          'e': 90.0, 'ese': 112.5, 'se': 135.0, 'sse': 157.5,
+          's': 180.0, 'ssw': 202.5, 'sw': 225.0, 'wsw': 247.5,
+          'w': 270.0, 'wnw': 292.5, 'nw': 315.0, 'nnw': 337.5,
+          'é': 0.0, 'ék': 45.0, 'k': 90.0, 'dk': 135.0,
+          'd': 180.0, 'dny': 225.0, 'ny': 270.0, 'ény': 315.0
+        } -%}
+
+        {%- set ms_szorzo = {
+          'm/s': 1.0, 'km/h': 0.2777778, 'kph': 0.2777778,
+          'mph': 0.44704, 'mi/h': 0.44704, 'kn': 0.5144444, 'kt': 0.5144444
+        } -%}
+
+        {%- macro szam(ertek) -%}
+          {{ '%.2f' | format(ertek | float(0)) | replace('.', ',') }}
+        {%- endmacro -%}
+
+        {%- set ns = namespace(url =
+          'http://pro.idokep.hu/sendws.php'
+          ~ '?user=' ~ (user_name | string | urlencode)
+          ~ '&pass=' ~ (password | string | urlencode)
+          ~ '&ev=' ~ now().year
+          ~ '&ho=' ~ now().month
+          ~ '&nap=' ~ now().day
+          ~ '&ora=' ~ now().hour
+          ~ '&perc=' ~ now().minute
+          ~ '&mp=' ~ now().second) -%}
+
+        {#- Egyszerű számértékek: hőmérséklet, pára, nyomás, beltéri hőm. -#}
+        {%- for kulcs, ent in [
+              ('hom', temp_sensor),
+              ('rh', hum_sensor),
+              ('p', press_sensor),
+              ('inhom', indoor_sensor),
+              ('csap', r_10m),
+              ('csap1h', r_1h),
+              ('csaptotal', r_24h)
+            ] -%}
+          {%- if ent not in ['', none] and is_number(states(ent)) -%}
+            {%- set ns.url = ns.url ~ '&' ~ kulcs ~ '=' ~ szam(states(ent)) | trim -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {#- Szélirány: fok vagy égtáj-rövidítés -#}
+        {%- if wdir_sensor not in ['', none] -%}
+          {%- set nyers = states(wdir_sensor) -%}
+          {%- if is_number(nyers) -%}
+            {%- set fok = nyers | float(0) % 360 -%}
+            {%- set ns.url = ns.url ~ '&szelirany=' ~ szam(fok) | trim -%}
+          {%- elif nyers is string and egtajak.get(nyers | lower | trim) is not none -%}
+            {%- set ns.url = ns.url ~ '&szelirany=' ~ szam(egtajak[nyers | lower | trim]) | trim -%}
+          {%- endif -%}
+        {%- endif -%}
+
+        {#- Szélsebesség és széllökés: m/s-ra váltva a szenzor egysége alapján -#}
+        {%- for kulcs, ent in [('szelero', wspeed_sensor), ('szellokes', wgust_sensor)] -%}
+          {%- if ent not in ['', none] and is_number(states(ent)) -%}
+            {%- set egyseg = (state_attr(ent, 'unit_of_measurement') or 'km/h') | lower | trim -%}
+            {%- set szorzo = ms_szorzo.get(egyseg, 0.2777778) -%}
+            {%- set ns.url = ns.url ~ '&' ~ kulcs ~ '=' ~ szam(states(ent) | float(0) * szorzo) | trim -%}
+          {%- endif -%}
+        {%- endfor -%}
+
+        {{ ns.url ~ '&tipus=egyeb' }}
