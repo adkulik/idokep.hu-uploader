@@ -23,6 +23,8 @@ Az Időkép térképeit és előrejelzéseit emberek százezrei használják nap
 
 ## ⚠️ 1. Lépés: Előfeltételek (Kötelező!)
 
+A sablon **Home Assistant 2024.10 vagy újabb** verziót igényel.
+
 A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. Ha még nincs ilyened, **[kattints ide és regisztrálj egyet!](https://www.idokep.hu/regisztracio?szint=halado)**
 
 Mivel a Blueprintek önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
@@ -72,3 +74,26 @@ Kész is vagy! Az automatizáció innentől kezdve a háttérben, észrevétlen�
 
 * **Szélsebesség és széllökés:** a sablon a szenzor saját mértékegységét olvassa ki, és automatikusan m/s-ra váltja (km/h, m/s, mph és csomó támogatott).
 * **Szélirány:** megadható fokban (0–360) vagy égtáj-rövidítésként, angolul (N, NNE, NE …) vagy magyarul (É, ÉK, K, DK, D, DNY, NY, ÉNY).
+
+---
+
+## 🔄 Frissítés
+
+Új verzió megjelenésekor a Home Assistantban a **Tervezetek** listájában kattints a sablon melletti három pöttyre, és válaszd az újraimportálást (angol felületen: *Re-import blueprint*). A meglévő automatizációd beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
+
+---
+
+## 📋 Változásnapló
+
+### 1.0 (2026-10-31)
+
+Első számozott kiadás.
+
+* Grafikus beállítófelület öt összecsukható szekcióval: Időkép fiók, Ütemezés, Hőmérséklet és Páratartalom, Szél, Csapadék.
+* Választható feltöltési gyakoriság: percenként, 2, 5, 10 vagy 15 percenként (alapértelmezés: 5 perc).
+* Beküldhető adatok: kültéri hőmérséklet, páratartalom, tengerszintre korrigált légnyomás, beltéri hőmérséklet, szélirány, szélsebesség, széllökés, valamint 10 perces, 1 órás és napi csapadék.
+* A szélsebesség és a széllökés automatikus átváltása m/s-ra a szenzor mértékegysége alapján (km/h, m/s, mph, csomó).
+* Szélirány fokban vagy angol, illetve magyar égtáj-rövidítéssel.
+* A nem elérhető vagy nem számértékű szenzorok kimaradnak a beküldésből, így nem kerülnek fel hamis nullák.
+* Kitöltetlen fiókadatok vagy hőmérséklet-szenzor esetén nem indul feltöltés.
+* Műszerelhelyezési útmutató és biztonsági tudnivalók közvetlenül a beállítófelületen.

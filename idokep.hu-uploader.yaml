@@ -62,8 +62,16 @@ blueprint:
     * **Légnyomásmérő:** Beltéren is elhelyezhető, de figyelj arra, hogy a Home
     Assistant mindig **tengerszintre átszámított (relatív) légnyomásértéket**
     küldjön, ne pedig a szenzor által mért abszolút értéket.
+
+
+    ---
+
+
+    **Verzió:** 1.0 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
+  homeassistant:
+    min_version: 2024.10.0
   input:
     fiok:
       name: Időkép fiók
