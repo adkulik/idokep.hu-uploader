@@ -68,15 +68,18 @@ blueprint:
     fiok:
       name: Időkép fiók
       icon: mdi:account-key
+      collapsed: true
       input:
         idokep_user:
           name: Felhasználónév
           description: Az Időkép állomásod azonosítója.
+          default: ""
           selector:
             text:
         idokep_pass:
           name: Jelszó
           description: Az állomáshoz tartozó jelszó.
+          default: ""
           selector:
             text:
               type: password
@@ -108,12 +111,14 @@ blueprint:
                   value: "/15"
 
     merok:
-      name: Mérőszenzorok
+      name: Hőmérséklet és Páratartalom
       icon: mdi:thermometer
+      collapsed: true
       input:
         temp_sensor:
           name: Hőmérséklet (Kötelező)
-          description: Kültéri hőmérséklet.
+          description: Kültéri hőmérséklet. Enélkül nem történik feltöltés.
+          default: ""
           selector:
             entity:
               domain: sensor
@@ -223,8 +228,12 @@ triggers:
     minutes: !input feltoltes_gyakorisag
 
 conditions:
+  # Az összecsukható szekciók miatt a fiókadatok és a hőmérséklet-szenzor
+  # üres alapértéket kaptak, ezért itt ellenőrizzük, hogy ki vannak-e töltve.
   - condition: template
-    value_template: "{{ temp_sensor != '' and is_number(states(temp_sensor)) }}"
+    value_template: >-
+      {{ user_name not in ['', none] and password not in ['', none]
+         and temp_sensor not in ['', none] and is_number(states(temp_sensor)) }}
 
 actions:
   - action: shell_command.idokep_get
