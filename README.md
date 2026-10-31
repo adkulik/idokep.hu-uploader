@@ -30,21 +30,26 @@ A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. 
 Mivel a Blueprintek önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
 
 1. Nyisd meg a Home Assistant `configuration.yaml` fájlját.
-2. Keresd meg a `shell_command:` blokkot (ha még nincs, hozd létre a fájl végén).
-3. Illeszd be az alábbi sort pontosan így, az idézőjelekre figyelve:
+2. Keresd meg a `rest_command:` blokkot (ha még nincs, hozd létre a fájl végén).
+3. Illeszd be az alábbi bejegyzést pontosan így, a behúzásokra figyelve:
 
 ```yaml
-shell_command:
-  idokep_get: 'curl -s -o /dev/null -A "IdokepAutomata/500 (Windows)" "{{ url }}"'
+rest_command:
+  idokep_get:
+    url: "{{ url }}"
+    method: get
+    headers:
+      User-Agent: "IdokepAutomata/500 (Windows)"
+    timeout: 15
 ```
 
-> **Miért van erre szükség?** Az `-A` kapcsolóval megadott azonosító igazolja, hogy Időkép Feltöltőt használsz. Az `-o /dev/null` eldobja a szerver válaszát, hogy ne kerüljön feleslegesen a Home Assistantba.
+> **Mit csinál ez a blokk?** Létrehoz egy `rest_command.idokep_get` műveletet, amellyel a sablon a Home Assistant beépített HTTP-kliensén keresztül küldi el az adatokat, külön program futtatása nélkül. A `User-Agent` fejléc igazolja, hogy Időkép Feltöltőt használsz.
 
-> **Ne használj `> /dev/null 2>&1` átirányítást!** A Home Assistant a `shell_command`-ot nem shellben futtatja, így az átirányítást a curl külön argumentumként kapná meg, és `URL_MALFORMAT` (3-as) hibakóddal leállna. Ezért szerepel fent a curl saját `-o /dev/null` kapcsolója.
+> **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem válaszol időben, a Home Assistant ezt a rendszernaplóba írja. A válasz szövegét a sablon nem ellenőrzi.
 
-> **Biztonsági megjegyzés:** ha a parancs hibára fut, a Home Assistant a teljes parancssort, benne az állomás jelszavával, kiírja a rendszernaplóba. Ez bekerülhet a diagnosztikai csomagokba és a biztonsági mentésekbe is, ezért az Időkép-állomásodhoz használj külön, máshol nem használt jelszót.
+> **Biztonsági megjegyzés:** a jelszó az URL-ben utazik, és ha a beküldés hibára fut, a Home Assistant a teljes URL-t, benne az állomás jelszavával, kiírhatja a rendszernaplóba. Ez bekerülhet a diagnosztikai csomagokba és a biztonsági mentésekbe is, ezért az Időkép-állomásodhoz használj külön, máshol nem használt jelszót.
 
-4. Mentsd el a fájlt, majd **indítsd újra a Home Assistantot**, vagy a *Fejlesztői eszközök* menüpontban végezz egy YAML újratöltést!
+4. Mentsd el a fájlt, majd **indítsd újra a Home Assistantot**.
 
 ---
 
@@ -81,9 +86,30 @@ Kész is vagy! Az automatizáció innentől kezdve a háttérben, észrevétlen�
 
 Új verzió megjelenésekor a Home Assistantban a **Tervezetek** listájában kattints a sablon melletti három pöttyre, és válaszd az újraimportálást (angol felületen: *Re-import blueprint*). A meglévő automatizációd beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
 
+### Frissítés 1.x-ről 2.0-ra
+
+A 2.0 a `shell_command` és a curl helyett a Home Assistant beépített `rest_command` integrációját használja, ezért egyszer a `configuration.yaml`-hoz is hozzá kell nyúlnod. Ebben a sorrendben haladj, így a feltöltés legfeljebb az újraindítások idejére áll le:
+
+1. Vedd fel a `configuration.yaml`-ba a fenti, 1. lépésben látható `rest_command` blokkot. A régi `shell_command.idokep_get` sort egyelőre hagyd meg.
+2. Indítsd újra a Home Assistantot.
+3. Importáld újra a sablont a fent leírt módon.
+4. Töröld a `configuration.yaml`-ból a régi `shell_command.idokep_get` sort, majd indítsd újra a Home Assistantot, vagy töltsd újra a shell parancsokat.
+
+Az automatizációd beállításait nem kell módosítani.
+
+Ha maradnál a curl-os változatnál, az 1.0 továbbra is importálható erről a címről: `https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/tags/v1.0/idokep.hu-uploader.yaml`
+
 ---
 
 ## 📋 Változásnapló
+
+### 2.0 (2026-10-31)
+
+**Törő változás:** a frissítéshez a `configuration.yaml`-ba új bejegyzés kell. Lásd fent a *Frissítés 1.x-ről 2.0-ra* részt.
+
+* A beküldés a Home Assistant beépített `rest_command` integrációjával történik a `shell_command` és a curl helyett. Nem indul külön folyamat minden beküldésnél, és megszűnt a `shell_command` átirányításos csapdája.
+* A 4xx/5xx HTTP-hibákat a Home Assistant figyelmeztetésként naplózza. Az 1.0 curl-os beállítása ezeket csendben elnyelte.
+* Ismert korlát: az Időkép válasza nem UTF-8 kódolású, és a `rest_command` ezt nem tudja szövegként beolvasni. Ezért a sablon a válasz szövegét nem ellenőrzi, így például a hibás jelszót sem ismeri fel.
 
 ### 1.0 (2026-10-31)
 

@@ -1,30 +1,45 @@
 blueprint:
   name: Időkép Automata Feltöltő (Univerzális)
   description: >-
-    Beküldi az okosotthon meteorológiai adatait az Időkép állomásodhoz.
+    Beküldi az okosotthon meteorológiai adatait az Időkép állomásodhoz, a Home
+    Assistant beépített `rest_command` integrációjával.
 
 
-    **Előfeltétel:** a `shell_command.idokep_get` parancsnak léteznie kell a
+    **Előfeltétel:** a `rest_command.idokep_get` parancsnak léteznie kell a
     `configuration.yaml` fájlban. A helyes forma:
 
 
     ```yaml
 
-    shell_command:
-      idokep_get: 'curl -s -o /dev/null -A "IdokepAutomata/500 (Windows)" "{{ url }}"'
+    rest_command:
+      idokep_get:
+        url: "{{ url }}"
+        method: get
+        headers:
+          User-Agent: "IdokepAutomata/500 (Windows)"
+        timeout: 15
     ```
 
 
-    Fontos: a Home Assistant a `shell_command`-ot **nem shellben** futtatja,
-    ezért a `> /dev/null 2>&1` típusú átirányítás nem működik — a curl külön
-    argumentumként kapná meg, és `URL_MALFORMAT` (3-as) hibakóddal állna le.
-    Használd helyette a curl saját `-o /dev/null` kapcsolóját, ahogy fent.
+    A blokk felvétele után indítsd újra a Home Assistantot.
 
 
-    **Biztonsági megjegyzés:** ha a parancs hibára fut, a Home Assistant a
-    teljes parancssort — benne az állomás jelszavával — kiírja a rendszernaplóba,
-    ami bekerül a diagnosztikai csomagokba és a biztonsági mentésekbe is.
-    Használj az Időkép-állomásodhoz külön, máshol nem használt jelszót.
+    **Frissítés 1.x-ről:** a 2.0 a `shell_command` helyett `rest_command`-ot
+    használ. Vedd fel a fenti blokkot, indítsd újra a Home Assistantot, és csak
+    utána importáld újra a blueprintet. A régi `shell_command.idokep_get` sor
+    ezután törölhető. Az automatizációd beállításait nem kell módosítani.
+
+
+    **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem
+    válaszol időben, a Home Assistant ezt a rendszernaplóba írja. A válasz
+    szövegét a blueprint nem ellenőrzi.
+
+
+    **Biztonsági megjegyzés:** a jelszó az URL-ben utazik, és hiba esetén a
+    Home Assistant a teljes URL-t — benne az állomás jelszavával — kiírhatja a
+    rendszernaplóba, ami bekerül a diagnosztikai csomagokba és a biztonsági
+    mentésekbe is. Használj az Időkép-állomásodhoz külön, máshol nem használt
+    jelszót.
 
 
     **Mértékegységek:** a szélsebességet és a széllökést a szenzor saját
@@ -67,7 +82,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 1.0 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.0 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
@@ -244,7 +259,11 @@ conditions:
          and temp_sensor not in ['', none] and is_number(states(temp_sensor)) }}
 
 actions:
-  - action: shell_command.idokep_get
+  # A választ szándékosan nem kérjük vissza (response_variable nélkül):
+  # az Időkép válasza nem UTF-8 kódolású, és a rest_command ilyenkor
+  # dekódolási hibát dob, amelynek üzenetében a jelszót tartalmazó URL is
+  # a naplóba kerül. Válaszkérés nélkül a rest_command nem dekódolja a választ.
+  - action: rest_command.idokep_get
     data:
       url: >-
         {%- set egtajak = {
