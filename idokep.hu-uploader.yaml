@@ -32,7 +32,7 @@ blueprint:
 
     **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem
     válaszol időben, a Home Assistant ezt a rendszernaplóba írja. A válasz
-    szövegét a blueprint nem ellenőrzi.
+    szövegét a sablon-automatizmus nem ellenőrzi.
 
 
     **Biztonsági megjegyzés:** a jelszó az URL-ben utazik, és hiba esetén a

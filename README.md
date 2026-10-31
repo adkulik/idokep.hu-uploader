@@ -1,6 +1,6 @@
-# ⛅ Időkép Automata Feltöltő (Home Assistant Blueprint)
+# ⛅ Időkép Automata Feltöltő (Home Assistant sablon-automatizmus / Blueprint)
 
-Ezzel a Home Assistant sablonnal (Blueprint) pofonegyszerűen, egy grafikus felületen keresztül bekötheted az okosotthonod meteorológiai szenzorait a magyar Időkép rendszerébe. 
+Ezzel a Home Assistant sablon-automatizmussal (angolul: Blueprint) pofonegyszerűen, egy grafikus felületen keresztül bekötheted az okosotthonod meteorológiai szenzorait a magyar Időkép rendszerébe. 
 
 Nincs többé bonyolult YAML kódolás, a sablon a háttérben automatikusan elvégzi a legnehezebb feladatokat:
 * Az adatok Időkép-kompatibilis formázását (tizedesvesszők, pontos kerekítések).
@@ -27,7 +27,7 @@ A sablon **Home Assistant 2024.10 vagy újabb** verziót igényel.
 
 A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. Ha még nincs ilyened, **[kattints ide és regisztrálj egyet!](https://www.idokep.hu/regisztracio?szint=halado)**
 
-Mivel a Blueprintek önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
+Mivel a sablon-automatizmusok önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
 
 1. Nyisd meg a Home Assistant `configuration.yaml` fájlját.
 2. Keresd meg a `rest_command:` blokkot (ha még nincs, hozd létre a fájl végén).
@@ -55,7 +55,7 @@ rest_command:
 
 ## 🚀 2. Lépés: Telepítés
 
-A Blueprint importálásához kattints az alábbi gombra, ami varázsütésre megnyitja a saját Home Assistant rendszeredet az importáló ablakkal:
+A sablon-automatizmus importálásához kattints az alábbi gombra, ami varázsütésre megnyitja a saját Home Assistant rendszeredet az importáló ablakkal:
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml)
 
