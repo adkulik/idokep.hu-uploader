@@ -38,7 +38,7 @@ shell_command:
   idokep_get: 'curl -s -o /dev/null -A "IdokepAutomata/500 (Windows)" "{{ url }}"'
 ```
 
-> **Miért van erre szükség?** Az `-A` kapcsolóval megadott azonosító elhiteti az Időkép szervereivel, hogy egy hivatalos meteorológiai szoftverből érkezik az adat, így elkerülheted a kérések blokkolását. Az `-o /dev/null` eldobja a szerver válaszát, hogy ne kerüljön feleslegesen a Home Assistantba.
+> **Miért van erre szükség?** Az `-A` kapcsolóval megadott azonosító igazolja, hogy Időkép Feltöltőt használsz. Az `-o /dev/null` eldobja a szerver válaszát, hogy ne kerüljön feleslegesen a Home Assistantba.
 
 > **Ne használj `> /dev/null 2>&1` átirányítást!** A Home Assistant a `shell_command`-ot nem shellben futtatja, így az átirányítást a curl külön argumentumként kapná meg, és `URL_MALFORMAT` (3-as) hibakóddal leállna. Ezért szerepel fent a curl saját `-o /dev/null` kapcsolója.
 
