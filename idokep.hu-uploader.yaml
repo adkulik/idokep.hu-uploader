@@ -26,8 +26,8 @@ blueprint:
 
     **Frissítés 1.x-ről:** a 2.0 a `shell_command` helyett `rest_command`-ot
     használ. Vedd fel a fenti blokkot, indítsd újra a Home Assistantot, és csak
-    utána importáld újra a blueprintet. A régi `shell_command.idokep_get` sor
-    ezután törölhető. Az automatizációd beállításait nem kell módosítani.
+    utána importáld újra a sablon-automatizmust. A régi `shell_command.idokep_get`
+    sor ezután törölhető. Az automatizmusod beállításait nem kell módosítani.
 
 
     **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem

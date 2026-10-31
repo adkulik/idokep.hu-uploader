@@ -59,21 +59,21 @@ A Blueprint importálásához kattints az alábbi gombra, ami varázsütésre me
 
 [![Open your Home Assistant instance and show the blueprint import dialog with a specific blueprint pre-filled.](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml)
 
-*(Ha a gomb valamiért nem működne, másold ki ezt a linket: `https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml` és a Home Assistant **Tervezetek** menüpontjában, a jobb alsó sarokban lévő **Importálás** gombnál illeszd be!)*
+*(Ha a gomb valamiért nem működne, másold ki ezt a linket: `https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml`, majd a Home Assistant **Sablon-automatizmusok** oldalán kattints a jobb alsó sarokban lévő **Sablon-automatizmus importálása** gombra. Illeszd be a linket, kattints az **Előnézet**, végül a **Sablon-automatizmus importálása** gombra!)*
 
 ---
 
 ## ⚙️ 3. Lépés: Beállítás a felületen
 
-1. Menj a **Beállítások -> Automatizációk és jelenetek -> Tervezetek (Blueprints)** menüpontba.
-2. Keresd meg a listában az *Időkép Automata Feltöltő (Univerzális)* sablont, és kattints az **Automatizálás létrehozása** gombra.
+1. Menj a **Beállítások -> Automatizmusok és jelenetek -> Sablon-automatizmusok** oldalra (angol felületen: *Blueprints*).
+2. Keresd meg a listában az *Időkép Automata Feltöltő (Univerzális)* sablont, és kattints az **Automatizmus létrehozása** gombra.
 3. Töltsd ki a megjelenő egyszerű grafikus felületet:
    * **Felhasználónév és Jelszó:** Add meg az Időkép állomásod hivatalos azonosítóit.
    * **Ütemezés:** Válaszd ki, milyen sűrűn küldjön adatot (percenként, 2, 5, 10 vagy 15 percenként). Az alapértelmezés 5 perc, ami a legtöbb állomásnak bőven elég.
    * **Szenzorok:** Válaszd ki a legördülő menükből az okosotthonod megfelelő entitásait. Csak a Hőmérséklet megadása kötelező, az összes többi meteorológiai adat (páratartalom, légnyomás, beltéri hőmérséklet, szél, csapadék) opcionális!
-4. Mentsd el az automatizációt.
+4. Mentsd el az automatizmust.
 
-Kész is vagy! Az automatizáció innentől kezdve a háttérben, észrevétlenül, a választott gyakorisággal frissíti az adataidat az Időkép hálózatában.
+Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül, a választott gyakorisággal frissíti az adataidat az Időkép hálózatában.
 
 ### 🌬️ Mértékegységek
 
@@ -84,7 +84,7 @@ Kész is vagy! Az automatizáció innentől kezdve a háttérben, észrevétlen�
 
 ## 🔄 Frissítés
 
-Új verzió megjelenésekor a Home Assistantban a **Tervezetek** listájában kattints a sablon melletti három pöttyre, és válaszd az újraimportálást (angol felületen: *Re-import blueprint*). A meglévő automatizációd beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
+Új verzió megjelenésekor a Home Assistantban a **Sablon-automatizmusok** listájában kattints a sablon melletti három pöttyre, és válaszd a **Sablon-automatizmus újraimportálása** lehetőséget (angol felületen: *Re-import blueprint*). A meglévő automatizmusod beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
 
 ### Frissítés 1.x-ről 2.0-ra
 
@@ -95,7 +95,7 @@ A 2.0 a `shell_command` és a curl helyett a Home Assistant beépített `rest_co
 3. Importáld újra a sablont a fent leírt módon.
 4. Töröld a `configuration.yaml`-ból a régi `shell_command.idokep_get` sort, majd indítsd újra a Home Assistantot, vagy töltsd újra a shell parancsokat.
 
-Az automatizációd beállításait nem kell módosítani.
+Az automatizmusod beállításait nem kell módosítani.
 
 Ha maradnál a curl-os változatnál, az 1.0 továbbra is importálható erről a címről: `https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/tags/v1.0/idokep.hu-uploader.yaml`
 
