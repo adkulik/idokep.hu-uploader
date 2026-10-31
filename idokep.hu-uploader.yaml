@@ -30,6 +30,38 @@ blueprint:
     **Mértékegységek:** a szélsebességet és a széllökést a szenzor saját
     mértékegysége alapján váltja át m/s-ra (km/h, m/s, mph és csomó
     támogatott). A szélirány fokban vagy égtáj-rövidítésként is megadható.
+
+
+    ### ❗ Fontos figyelmeztetés: Csak hiteles adatokat tölts fel!
+
+
+    Az Időkép térképeit és előrejelzéseit emberek százezrei használják nap mint
+    nap. Kérjük, **csak és kizárólag akkor indíts adatfeltöltést, ha a
+    szenzoraid elhelyezése megfelel a meteorológiai szabványoknak!** A rossz
+    helyre tett műszerek (pl. napon lévő hőmérő, fal melletti szélmérő) hibás
+    adatokat generálnak, amivel rontod a hálózat megbízhatóságát.
+
+
+    #### 📐 Műszerelhelyezési útmutató
+
+
+    * **Hőmérő és páratartalom mérő:** 2 méter magasságban, árnyékos helyen
+    (lehetőleg szabványos hőmérőházban vagy tányéros árnyékolóban) kell
+    elhelyezni. Szigorúan tilos falhoz, betonhoz vagy olyan felülethez
+    rögzíteni, ami hőt sugározhat magából!
+
+    * **Szélmérő:** Szabad, nyílt területen, a talajszinttől számítva ideálisan
+    10 méter magasan kell lennie. Ha erre nincs mód, akkor a környező akadályok
+    (háztető, fák) fölé kell nyúlnia legalább 2-3 méterrel, hogy a légáramlás
+    akadálytalanul érje.
+
+    * **Csapadékmérő:** Nyílt, vízszintes területen, a talajtól nagyjából
+    1-1,5 méter magasságban telepítve. Ügyelj rá, hogy épület, fa vagy tető ne
+    takarja ki, és a szél ne tudjon belefújni faleveleket.
+
+    * **Légnyomásmérő:** Beltéren is elhelyezhető, de figyelj arra, hogy a Home
+    Assistant mindig **tengerszintre átszámított (relatív) légnyomásértéket**
+    küldjön, ne pedig a szenzor által mért abszolút értéket.
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   input:
