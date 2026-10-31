@@ -11,7 +11,7 @@ blueprint:
     ```yaml
 
     shell_command:
-      idokep_get: 'curl -s -o /dev/null "{{ url }}"'
+      idokep_get: 'curl -s -o /dev/null -A "IdokepAutomata/500 (Windows)" "{{ url }}"'
     ```
 
 
@@ -31,7 +31,7 @@ blueprint:
     mértékegysége alapján váltja át m/s-ra (km/h, m/s, mph és csomó
     támogatott). A szélirány fokban vagy égtáj-rövidítésként is megadható.
   domain: automation
-  source_url: https://raw.githubusercontent.com/adam-kulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
+  source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   input:
     fiok:
       name: Időkép fiók
