@@ -25,7 +25,7 @@ Az Időkép térképeit és előrejelzéseit emberek százezrei használják nap
 
 A sablon **Home Assistant 2024.10 vagy újabb** verziót igényel.
 
-A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. Ha még nincs ilyened, **[kattints ide és regisztrálj egyet!](https://www.idokep.hu/regisztracio?szint=halado)**
+A feltöltéshez szükséged lesz egy saját, haladó szintű Időkép fiókra. Ha még nincs ilyened, **[kattints ide és regisztrálj egyet!](https://www.idokep.hu/regisztracio?szint=halado)** Az így létrehozott fiók Normál típusú (lásd a 3. lépésben a Fióktípust).
 
 Mivel a sablon-automatizmusok önmagukban nem tudnak közvetlenül a külső hálózatra kommunikálni, létre kell hoznunk egy apró, univerzális "hidat" a Home Assistant `configuration.yaml` fájljában.
 
@@ -68,6 +68,7 @@ A sablon-automatizmus importálásához kattints az alábbi gombra, ami varázs�
 1. Menj a **Beállítások -> Automatizmusok és jelenetek -> Sablon-automatizmusok** oldalra (angol felületen: *Blueprints*).
 2. Keresd meg a listában az *Időkép Automata Feltöltő (Univerzális)* sablont, és kattints az **Automatizmus létrehozása** gombra.
 3. Töltsd ki a megjelenő egyszerű grafikus felületet:
+   * **Fióktípus:** Az Időképen kétféle fiók létezik, Normál és Pro. A legtöbb állomáshoz a Normál fiók megfelelő, Pro fiókra csak speciális esetekben van szükség. Ha a fiókodat az 1. lépésben linkelt haladó szintű regisztrációval hoztad létre, akkor Normál fiókod van. Az alapértelmezés a Normál.
    * **Felhasználónév és Jelszó:** Add meg az Időkép állomásod hivatalos azonosítóit.
    * **Ütemezés:** Válaszd ki, milyen sűrűn küldjön adatot (percenként, 2, 5, 10 vagy 15 percenként). Az alapértelmezés 5 perc, ami a legtöbb állomásnak bőven elég.
    * **Szenzorok:** Válaszd ki a legördülő menükből az okosotthonod megfelelő entitásait. Csak a Hőmérséklet megadása kötelező, az összes többi meteorológiai adat (páratartalom, légnyomás, beltéri hőmérséklet, szél, csapadék) opcionális!
@@ -86,6 +87,12 @@ Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül,
 
 Új verzió megjelenésekor a Home Assistantban a **Sablon-automatizmusok** listájában kattints a sablon melletti három pöttyre, és válaszd a **Sablon-automatizmus újraimportálása** lehetőséget (angol felületen: *Re-import blueprint*). A meglévő automatizmusod beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
 
+### Frissítés 2.0-ról 2.1-re
+
+Importáld újra a sablont a fent leírt módon. A `configuration.yaml`-hoz nem kell hozzányúlni.
+
+A 2.0 és a korábbi verziók mindig a Pro fiókok címére (`pro.idokep.hu`) küldtek, a 2.1 alapértelmezése viszont a Normál fiók. Ha Pro fiókod van, az újraimportálás után nyisd meg az automatizmusodat, és az **Időkép fiók** részben a **Fióktípusnál** válaszd a **Pro**-t. Normál fiók esetén nincs teendőd.
+
 ### Frissítés 1.x-ről 2.0-ra
 
 A 2.0 a `shell_command` és a curl helyett a Home Assistant beépített `rest_command` integrációját használja, ezért egyszer a `configuration.yaml`-hoz is hozzá kell nyúlnod. Ebben a sorrendben haladj, így a feltöltés legfeljebb az újraindítások idejére áll le:
@@ -102,6 +109,12 @@ Ha maradnál a curl-os változatnál, az 1.0 továbbra is importálható erről 
 ---
 
 ## 📋 Változásnapló
+
+### 2.1 (2026-11-01)
+
+* Új beállítás az **Időkép fiók** szekcióban: **Fióktípus** (Normál vagy Pro). Normál fióknál az adatok az `idokep.hu`, Pro fióknál a `pro.idokep.hu` címre mennek. Az alapértelmezés a Normál.
+* A 2.0 és a korábbi verziók mindig a `pro.idokep.hu` címre küldtek. Ha Pro fiókod van, a frissítés után a Fióktípusnál válaszd a Pro-t. Lásd fent a *Frissítés 2.0-ról 2.1-re* részt.
+* A beküldés típusjelölése (`tipus`) `egyeb` helyett `HA_Uploader`.
 
 ### 2.0 (2026-10-31)
 

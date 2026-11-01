@@ -24,10 +24,19 @@ blueprint:
     A blokk felvétele után indítsd újra a Home Assistantot.
 
 
+    **Fióktípus:** az Időképen kétféle fiók létezik, Normál és Pro. A legtöbb
+    állomáshoz a Normál fiók megfelelő, Pro fiókra csak speciális esetekben van
+    szükség. Ha a fiókodat a [haladó szintű
+    regisztrációval](https://www.idokep.hu/regisztracio?szint=halado) hoztad
+    létre, akkor Normál fiókod van. A fióktípust az „Időkép fiók” részben
+    választhatod ki; alapértelmezés a Normál.
+
+
     **Frissítés 1.x-ről:** a 2.0 a `shell_command` helyett `rest_command`-ot
     használ. Vedd fel a fenti blokkot, indítsd újra a Home Assistantot, és csak
     utána importáld újra a sablon-automatizmust. A régi `shell_command.idokep_get`
-    sor ezután törölhető. Az automatizmusod beállításait nem kell módosítani.
+    sor ezután törölhető. Az automatizmusod beállításait nem kell módosítani,
+    kivéve ha Pro fiókod van: ekkor a Fióktípusnál válaszd a Pro-t.
 
 
     **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem
@@ -82,7 +91,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 2.0 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.1 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
@@ -93,6 +102,21 @@ blueprint:
       icon: mdi:account-key
       collapsed: true
       input:
+        idokep_fioktipus:
+          name: Fióktípus
+          description: >-
+            Az Időképen kétféle fiók létezik. Ha a fiókodat a haladó szintű
+            regisztrációval hoztad létre, Normál fiókod van. A Pro csak
+            speciális esetekben szükséges. Alapértelmezés a Normál.
+          default: normal
+          selector:
+            select:
+              mode: list
+              options:
+                - label: Normál
+                  value: normal
+                - label: Pro
+                  value: pro
         idokep_user:
           name: Felhasználónév
           description: Az Időkép állomásod azonosítója.
@@ -233,6 +257,7 @@ mode: single
 max_exceeded: silent
 
 variables:
+  fioktipus: !input idokep_fioktipus
   user_name: !input idokep_user
   password: !input idokep_pass
   temp_sensor: !input temp_sensor
@@ -284,8 +309,11 @@ actions:
           {{ '%.2f' | format(ertek | float(0)) | replace('.', ',') }}
         {%- endmacro -%}
 
+        {#- Fióktípus: Pro -> pro.idokep.hu, minden más (alapértelmezés: Normál) -> idokep.hu -#}
+        {%- set alap = 'http://pro.idokep.hu' if (fioktipus | string | lower) == 'pro' else 'http://idokep.hu' -%}
+
         {%- set ns = namespace(url =
-          'http://pro.idokep.hu/sendws.php'
+          alap ~ '/sendws.php'
           ~ '?user=' ~ (user_name | string | urlencode)
           ~ '&pass=' ~ (password | string | urlencode)
           ~ '&ev=' ~ now().year
@@ -330,4 +358,4 @@ actions:
           {%- endif -%}
         {%- endfor -%}
 
-        {{ ns.url ~ '&tipus=egyeb' }}
+        {{ ns.url ~ '&tipus=HA_Uploader' }}
