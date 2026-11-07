@@ -44,11 +44,11 @@ blueprint:
     szövegét a sablon-automatizmus nem ellenőrzi.
 
 
-    **Biztonsági megjegyzés:** a jelszó az URL-ben utazik, és hiba esetén a
-    Home Assistant a teljes URL-t — benne az állomás jelszavával — kiírhatja a
-    rendszernaplóba, ami bekerül a diagnosztikai csomagokba és a biztonsági
-    mentésekbe is. Használj az Időkép-állomásodhoz külön, máshol nem használt
-    jelszót.
+    **Biztonsági megjegyzés:** a beküldés titkosított HTTPS-kapcsolaton megy,
+    de a jelszó az URL része, ezért hiba esetén a Home Assistant a teljes
+    URL-t — benne az állomás jelszavával — kiírhatja a rendszernaplóba, ami
+    bekerül a diagnosztikai csomagokba és a biztonsági mentésekbe is. Használj
+    az Időkép-állomásodhoz külön, máshol nem használt jelszót.
 
 
     **Mértékegységek:** a szélsebességet és a széllökést a szenzor saját
@@ -93,7 +93,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 2.2 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.3 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
@@ -333,7 +333,7 @@ actions:
         {%- endmacro -%}
 
         {#- Fióktípus: Pro -> pro.idokep.hu, minden más (alapértelmezés: Normál) -> idokep.hu -#}
-        {%- set alap = 'http://pro.idokep.hu' if (fioktipus | string | lower) == 'pro' else 'http://idokep.hu' -%}
+        {%- set alap = 'https://pro.idokep.hu' if (fioktipus | string | lower) == 'pro' else 'https://idokep.hu' -%}
 
         {%- set ns = namespace(url =
           alap ~ '/sendws.php'
