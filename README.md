@@ -71,7 +71,7 @@ A sablon-automatizmus importálásához kattints az alábbi gombra, ami varázs�
    * **Fióktípus:** Az Időképen kétféle fiók létezik, Normál és Pro. A legtöbb állomáshoz a Normál fiók megfelelő, Pro fiókra csak speciális esetekben van szükség. Ha a fiókodat az 1. lépésben linkelt haladó szintű regisztrációval hoztad létre, akkor Normál fiókod van. Az alapértelmezés a Normál.
    * **Felhasználónév és Jelszó:** Add meg az Időkép állomásod hivatalos azonosítóit.
    * **Ütemezés:** Válaszd ki, milyen sűrűn küldjön adatot (percenként, 2, 5, 10 vagy 15 percenként). Az alapértelmezés 5 perc, ami a legtöbb állomásnak bőven elég.
-   * **Szenzorok:** Válaszd ki a legördülő menükből az okosotthonod megfelelő entitásait. Csak a Hőmérséklet megadása kötelező, az összes többi meteorológiai adat (páratartalom, légnyomás, beltéri hőmérséklet, szél, csapadék) opcionális!
+   * **Szenzorok:** Válaszd ki a legördülő menükből az okosotthonod megfelelő entitásait. Csak a Hőmérséklet megadása kötelező, az összes többi meteorológiai adat (páratartalom, légnyomás, beltéri hőmérséklet, szél, csapadék, napsugárzás, UV-index) opcionális!
 4. Mentsd el az automatizmust.
 
 Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül, a választott gyakorisággal frissíti az adataidat az Időkép hálózatában.
@@ -80,12 +80,18 @@ Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül,
 
 * **Szélsebesség és széllökés:** a sablon a szenzor saját mértékegységét olvassa ki, és automatikusan m/s-ra váltja (km/h, m/s, mph és csomó támogatott).
 * **Szélirány:** megadható fokban (0–360) vagy égtáj-rövidítésként, angolul (N, NNE, NE …) vagy magyarul (É, ÉK, K, DK, D, DNY, NY, ÉNY).
+* **Napsugárzás:** W/m²-ben megy fel. Ha a szenzor luxban mér, a sablon közelítőleg W/m²-re váltja.
+* **UV-index:** mértékegység nélküli szám, átváltás nélkül megy fel.
 
 ---
 
 ## 🔄 Frissítés
 
 Új verzió megjelenésekor a Home Assistantban a **Sablon-automatizmusok** listájában kattints a sablon melletti három pöttyre, és válaszd a **Sablon-automatizmus újraimportálása** lehetőséget (angol felületen: *Re-import blueprint*). A meglévő automatizmusod beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
+
+### Frissítés 2.1-ről 2.2-re
+
+Importáld újra a sablont a fent leírt módon. A `configuration.yaml`-hoz nem kell hozzányúlni. A napsugárzás és az UV-index beküldéséhez nyisd meg az automatizmusodat, és a **Napsugárzás és UV** részben válaszd ki a szenzoraidat. Ha üresen hagyod őket, minden úgy működik, mint eddig.
 
 ### Frissítés 2.0-ról 2.1-re
 
@@ -109,6 +115,12 @@ Ha maradnál a curl-os változatnál, az 1.0 továbbra is importálható erről 
 ---
 
 ## 📋 Változásnapló
+
+### 2.2 (2026-11-07)
+
+* Új, opcionális **Napsugárzás és UV** szekció: napsugárzás (`solarradiation`, W/m²) és UV-index (`UV`) beküldése.
+* Lux mértékegységű fényerő-szenzor értékét a sablon közelítőleg W/m²-re váltja.
+* Ha a két új mezőt üresen hagyod, a beküldés változatlan.
 
 ### 2.1 (2026-11-01)
 

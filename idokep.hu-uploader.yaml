@@ -53,7 +53,9 @@ blueprint:
 
     **Mértékegységek:** a szélsebességet és a széllökést a szenzor saját
     mértékegysége alapján váltja át m/s-ra (km/h, m/s, mph és csomó
-    támogatott). A szélirány fokban vagy égtáj-rövidítésként is megadható.
+    támogatott). A szélirány fokban vagy égtáj-rövidítésként is megadható. A
+    napsugárzást W/m²-ben küldi; lux mértékegységű szenzor értékét
+    közelítőleg W/m²-re váltja. Az UV-index mértékegység nélküli szám.
 
 
     ### ❗ Fontos figyelmeztetés: Csak hiteles adatokat tölts fel!
@@ -91,7 +93,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 2.1 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.2 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
@@ -253,6 +255,25 @@ blueprint:
             entity:
               domain: sensor
 
+    napsugarzas:
+      name: Napsugárzás és UV
+      icon: mdi:white-balance-sunny
+      collapsed: true
+      input:
+        solar_radiation_sensor:
+          name: Napsugárzás (Opcionális)
+          description: W/m² vagy lux. A luxot közelítőleg W/m²-re váltja.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        uv_index_sensor:
+          name: UV-index (Opcionális)
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+
 mode: single
 max_exceeded: silent
 
@@ -270,6 +291,8 @@ variables:
   r_10m: !input rain_10m
   r_1h: !input rain_1h
   r_24h: !input rain_24h
+  solar_sensor: !input solar_radiation_sensor
+  uv_sensor: !input uv_index_sensor
 
 triggers:
   - trigger: time_pattern
@@ -357,5 +380,17 @@ actions:
             {%- set ns.url = ns.url ~ '&' ~ kulcs ~ '=' ~ szam(states(ent) | float(0) * szorzo) | trim -%}
           {%- endif -%}
         {%- endfor -%}
+
+        {#- Napsugárzás: W/m², a luxot közelítőleg W/m²-re váltva -#}
+        {%- if solar_sensor not in ['', none] and is_number(states(solar_sensor)) -%}
+          {%- set v = states(solar_sensor) | float(0) -%}
+          {%- set egyseg = (state_attr(solar_sensor, 'unit_of_measurement') or '') | lower | trim -%}
+          {%- set ns.url = ns.url ~ '&solarradiation=' ~ szam((v / 126.7) if egyseg in ['lx', 'lux'] else v) | trim -%}
+        {%- endif -%}
+
+        {#- UV-index -#}
+        {%- if uv_sensor not in ['', none] and is_number(states(uv_sensor)) -%}
+          {%- set ns.url = ns.url ~ '&UV=' ~ szam(states(uv_sensor)) | trim -%}
+        {%- endif -%}
 
         {{ ns.url ~ '&tipus=HA_Uploader' }}
