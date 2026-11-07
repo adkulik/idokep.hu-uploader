@@ -1,5 +1,7 @@
 # ⛅ Időkép Automata Feltöltő (Home Assistant sablon-automatizmus / Blueprint)
 
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20me%20a%20coffee-FFDD00?logo=buymeacoffee&logoColor=black)](https://buymeacoffee.com/adkulik)
+
 Ezzel a Home Assistant sablon-automatizmussal (angolul: Blueprint) pofonegyszerűen, egy grafikus felületen keresztül bekötheted az okosotthonod meteorológiai szenzorait a magyar Időkép rendszerébe. 
 
 Nincs többé bonyolult YAML kódolás, a sablon a háttérben automatikusan elvégzi a legnehezebb feladatokat:
@@ -125,6 +127,16 @@ A 2.0 a `shell_command` és a curl helyett a Home Assistant beépített `rest_co
 Az automatizmusod beállításait nem kell módosítani.
 
 Ha maradnál a curl-os változatnál, az 1.0 továbbra is importálható erről a címről: `https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/tags/v1.0/idokep.hu-uploader.yaml`
+
+---
+
+## ☕ Támogatás
+
+A sablon ingyenes, és az is marad. Ha hasznosnak találod, egy kávéval támogathatod a további fejlesztést:
+
+<a href="https://buymeacoffee.com/adkulik"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="50"></a>
+
+Rendszeres támogatásra a [GitHub Sponsors](https://github.com/sponsors/adkulik) is elérhető.
 
 ---
 
