@@ -9,6 +9,20 @@ Nincs többé bonyolult YAML kódolás, a sablon a háttérben automatikusan elv
 
 ---
 
+## 🔔 Ajánlott: értesítés az új verziókról (Blueprints Updater)
+
+A Home Assistant magától nem szól, ha egy sablon-automatizmusnak új verziója jelenik meg, ilyenkor kézzel kellene újraimportálni. Ezt veszi át a [Blueprints Updater](https://github.com/luuquangvu/blueprints-updater) közösségi integráció:
+
+* Minden telepített sablon-automatizmushoz frissítés-entitást hoz létre. Az Időkép Automata Feltöltő új verziója így ugyanott jelenik meg, ahol a Home Assistant többi frissítése, és egy kattintással telepíthető.
+* A sablon erre a repóra hivatkozik, ezért az integráció külön beállítás nélkül követi.
+* Frissítéskor az automatizmusod beállításai megmaradnak, a sablon korábbi változatairól pedig mentést tart.
+
+**Telepítés:** Home Assistant 2026.11-től a **Beállítások → Marketplace** oldalon (korábbi verziókban a HACS-ban) keresd meg a *Blueprints Updater*-t, telepítsd, majd indítsd újra a Home Assistantot. Ezután a **Beállítások → Eszközök és szolgáltatások → Integráció hozzáadása** gombbal add hozzá.
+
+**Tipp:** az automatikus frissítést hagyd kikapcsolva, és frissítés előtt nézd meg lent a Változásnaplót. Egy-egy új verzió (például a 2.0) a `configuration.yaml` módosítását is kérheti, ezt a frissítés nem végzi el helyetted.
+
+---
+
 ## ❗ Fontos figyelmeztetés: Csak hiteles adatokat tölts fel!
 
 Az Időkép térképeit és előrejelzéseit emberek százezrei használják nap mint nap. Kérjük, **csak és kizárólag akkor indíts adatfeltöltést, ha a szenzoraid elhelyezése megfelel a meteorológiai szabványoknak!** A rossz helyre tett műszerek (pl. napon lévő hőmérő, fal melletti szélmérő) hibás adatokat generálnak, amivel rontod a hálózat megbízhatóságát.
