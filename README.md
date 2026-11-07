@@ -63,7 +63,7 @@ rest_command:
 
 > **Hibakezelés:** ha az Időkép hibakóddal (4xx/5xx) válaszol, vagy nem válaszol időben, a Home Assistant ezt a rendszernaplóba írja. A válasz szövegét a sablon nem ellenőrzi.
 
-> **Biztonsági megjegyzés:** a jelszó az URL-ben utazik, és ha a beküldés hibára fut, a Home Assistant a teljes URL-t, benne az állomás jelszavával, kiírhatja a rendszernaplóba. Ez bekerülhet a diagnosztikai csomagokba és a biztonsági mentésekbe is, ezért az Időkép-állomásodhoz használj külön, máshol nem használt jelszót.
+> **Biztonsági megjegyzés:** a beküldés titkosított HTTPS-kapcsolaton megy, de a jelszó az URL része, és ha a beküldés hibára fut, a Home Assistant a teljes URL-t, benne az állomás jelszavával, kiírhatja a rendszernaplóba. Ez bekerülhet a diagnosztikai csomagokba és a biztonsági mentésekbe is, ezért az Időkép-állomásodhoz használj külön, máshol nem használt jelszót.
 
 4. Mentsd el a fájlt, majd **indítsd újra a Home Assistantot**.
 
@@ -105,6 +105,10 @@ Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül,
 
 Új verzió megjelenésekor a Home Assistantban a **Sablon-automatizmusok** listájában kattints a sablon melletti három pöttyre, és válaszd a **Sablon-automatizmus újraimportálása** lehetőséget (angol felületen: *Re-import blueprint*). A meglévő automatizmusod beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
 
+### Frissítés 2.2-ről 2.3-ra
+
+Importáld újra a sablont a fent leírt módon. Sem a `configuration.yaml`-hoz, sem az automatizmusod beállításaihoz nem kell hozzányúlni.
+
 ### Frissítés 2.1-ről 2.2-re
 
 Importáld újra a sablont a fent leírt módon. A `configuration.yaml`-hoz nem kell hozzányúlni. A napsugárzás és az UV-index beküldéséhez nyisd meg az automatizmusodat, és a **Napsugárzás és UV** részben válaszd ki a szenzoraidat. Ha üresen hagyod őket, minden úgy működik, mint eddig.
@@ -141,6 +145,11 @@ Rendszeres támogatásra a [GitHub Sponsors](https://github.com/sponsors/adkulik
 ---
 
 ## 📋 Változásnapló
+
+### 2.3 (2026-11-07)
+
+* A beküldés titkosított HTTPS-kapcsolaton megy (`https://idokep.hu`, illetve `https://pro.idokep.hu`), így a jelszó és a mérési adatok nem utaznak titkosítatlanul a hálózaton.
+* A frissítéshez elég újraimportálni a sablont: a `configuration.yaml` és az automatizmus beállításai változatlanok.
 
 ### 2.2 (2026-11-07)
 
