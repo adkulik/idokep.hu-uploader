@@ -93,7 +93,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 2.5 ·[Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.5 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
