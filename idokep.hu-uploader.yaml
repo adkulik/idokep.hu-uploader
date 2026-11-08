@@ -93,7 +93,7 @@ blueprint:
     ---
 
 
-    **Verzió:** 2.3 · [Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
+    **Verzió:** 2.5 ·[Forráskód és változásnapló](https://github.com/adkulik/idokep.hu-uploader)
   domain: automation
   source_url: https://raw.githubusercontent.com/adkulik/idokep.hu-uploader/refs/heads/main/idokep.hu-uploader.yaml
   homeassistant:
@@ -234,22 +234,34 @@ blueprint:
     csapadek:
       name: Csapadék
       icon: mdi:weather-pouring
+      description: >-
+        Az Időkép három csapadékértéket vár, mindhármat mm-ben. Ugyanezt a
+        hármat küldi a hivatalos Időkép feltöltő program is.
       collapsed: true
       input:
-        rain_10m:
-          name: 10 perces csapadék (Opcionális)
-          default: ""
-          selector:
-            entity:
-              domain: sensor
         rain_1h:
           name: 1 órás csapadék (Opcionális)
+          description: >-
+            Az elmúlt 1 óra csapadékösszege mm-ben (gördülő 1 órás ablak).
+            Az Időképre `csap1h` néven megy.
           default: ""
           selector:
             entity:
               domain: sensor
         rain_24h:
-          name: Napi összesített csapadék (Opcionális)
+          name: 24 órás csapadék (Opcionális)
+          description: >-
+            Az elmúlt 24 óra csapadékösszege mm-ben (gördülő 24 órás ablak,
+            nem az éjfél óta mért napi összeg). Az Időképre `csap` néven megy.
+          default: ""
+          selector:
+            entity:
+              domain: sensor
+        rain_total:
+          name: Összes csapadék – számláló (Opcionális)
+          description: >-
+            A csapadékmérő folyamatosan növekvő összesítő számlálója mm-ben
+            (nem napi és nem 24 órás érték). Az Időképre `csaptotal` néven megy.
           default: ""
           selector:
             entity:
@@ -262,13 +274,16 @@ blueprint:
       input:
         solar_radiation_sensor:
           name: Napsugárzás (Opcionális)
-          description: W/m² vagy lux. A luxot közelítőleg W/m²-re váltja.
+          description: >-
+            W/m² vagy lux. A luxot közelítőleg W/m²-re váltja. Az Időképre
+            `napfeny` néven megy.
           default: ""
           selector:
             entity:
               domain: sensor
         uv_index_sensor:
           name: UV-index (Opcionális)
+          description: Mértékegység nélküli szám. Az Időképre `uv` néven megy.
           default: ""
           selector:
             entity:
@@ -288,9 +303,9 @@ variables:
   wdir_sensor: !input wind_dir_sensor
   wspeed_sensor: !input wind_speed_sensor
   wgust_sensor: !input wind_gust_sensor
-  r_10m: !input rain_10m
   r_1h: !input rain_1h
   r_24h: !input rain_24h
+  r_total: !input rain_total
   solar_sensor: !input solar_radiation_sensor
   uv_sensor: !input uv_index_sensor
 
@@ -352,9 +367,9 @@ actions:
               ('rh', hum_sensor),
               ('p', press_sensor),
               ('inhom', indoor_sensor),
-              ('csap', r_10m),
+              ('csap', r_24h),
               ('csap1h', r_1h),
-              ('csaptotal', r_24h)
+              ('csaptotal', r_total)
             ] -%}
           {%- if ent not in ['', none] and is_number(states(ent)) -%}
             {%- set ns.url = ns.url ~ '&' ~ kulcs ~ '=' ~ szam(states(ent)) | trim -%}
@@ -385,12 +400,12 @@ actions:
         {%- if solar_sensor not in ['', none] and is_number(states(solar_sensor)) -%}
           {%- set v = states(solar_sensor) | float(0) -%}
           {%- set egyseg = (state_attr(solar_sensor, 'unit_of_measurement') or '') | lower | trim -%}
-          {%- set ns.url = ns.url ~ '&solarradiation=' ~ szam((v / 126.7) if egyseg in ['lx', 'lux'] else v) | trim -%}
+          {%- set ns.url = ns.url ~ '&napfeny=' ~ szam((v / 126.7) if egyseg in ['lx', 'lux'] else v) | trim -%}
         {%- endif -%}
 
         {#- UV-index -#}
         {%- if uv_sensor not in ['', none] and is_number(states(uv_sensor)) -%}
-          {%- set ns.url = ns.url ~ '&UV=' ~ szam(states(uv_sensor)) | trim -%}
+          {%- set ns.url = ns.url ~ '&uv=' ~ szam(states(uv_sensor)) | trim -%}
         {%- endif -%}
 
         {{ ns.url ~ '&tipus=HA_Uploader' }}
