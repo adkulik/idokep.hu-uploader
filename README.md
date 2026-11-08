@@ -96,14 +96,19 @@ Kész is vagy! Az automatizmus innentől kezdve a háttérben, észrevétlenül,
 
 * **Szélsebesség és széllökés:** a sablon a szenzor saját mértékegységét olvassa ki, és automatikusan m/s-ra váltja (km/h, m/s, mph és csomó támogatott).
 * **Szélirány:** megadható fokban (0–360) vagy égtáj-rövidítésként, angolul (N, NNE, NE …) vagy magyarul (É, ÉK, K, DK, D, DNY, NY, ÉNY).
-* **Napsugárzás:** W/m²-ben megy fel. Ha a szenzor luxban mér, a sablon közelítőleg W/m²-re váltja.
-* **UV-index:** mértékegység nélküli szám, átváltás nélkül megy fel.
+* **Csapadék:** mm-ben megy fel. Az 1 órás (`csap1h`) és a 24 órás (`csap`) érték gördülő összeg, az összes csapadék (`csaptotal`) a csapadékmérő folyamatosan növekvő számlálója.
+* **Napsugárzás:** W/m²-ben megy fel (`napfeny`). Ha a szenzor luxban mér, a sablon közelítőleg W/m²-re váltja.
+* **UV-index:** mértékegység nélküli szám, átváltás nélkül megy fel (`uv`).
 
 ---
 
 ## 🔄 Frissítés
 
 Új verzió megjelenésekor a Home Assistantban a **Sablon-automatizmusok** listájában kattints a sablon melletti három pöttyre, és válaszd a **Sablon-automatizmus újraimportálása** lehetőséget (angol felületen: *Re-import blueprint*). A meglévő automatizmusod beállításai megmaradnak. Hogy épp melyik verzió fut nálad, azt a sablon leírásának alján látod.
+
+### Frissítés 2.3-ról 2.5-re
+
+Importáld újra a sablont a fent leírt módon, majd nyisd meg az automatizmusodat, és a **Csapadék** részben a mezők leírása alapján ellenőrizd a csapadékszenzorokat.
 
 ### Frissítés 2.2-ről 2.3-ra
 
@@ -145,6 +150,10 @@ Rendszeres támogatásra a [GitHub Sponsors](https://github.com/sponsors/adkulik
 ---
 
 ## 📋 Változásnapló
+
+### 2.5 (2026-11-08)
+
+* Csapadékfeltöltés, UV- és fényadatok optimalizálása.
 
 ### 2.3 (2026-11-07)
 
